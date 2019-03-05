@@ -1,0 +1,18 @@
+{
+  "penalty_on_neg": 0.5,
+  "stop_fp": 0.01,
+  "process_num": 4,
+  "c_stride": 2,
+  "zoom": 2,
+  "face_path": "./data/face/faces",
+  "min_size": 2,
+  "single_fp": 0.3,
+  "niter": 40,
+  "max_cascade": 10,
+  "thres": 0.4,
+  "r_stride": 2,
+  "max_size": 24,
+  "single_fn": 0.01,
+  "adaptive_thres": false,
+  "background_path": "./data/face/background"
+}
