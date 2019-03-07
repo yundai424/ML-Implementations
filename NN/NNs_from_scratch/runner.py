@@ -57,6 +57,7 @@ def train(train_imgs, train_labels, holdout_imgs, holdout_labels, test_imgs, tes
     epoch = 0
     prev_ho_err = sys.maxsize
     err = 0
+    counter = 0
     while epoch < config.max_epoches:
         batch_xs_gen, batch_ys_gen = batch_generator(train_imgs, train_labels, config.batch_size)
         try:
@@ -65,14 +66,20 @@ def train(train_imgs, train_labels, holdout_imgs, holdout_labels, test_imgs, tes
         except StopIteration:
             pass
         err = model.test_err(test_imgs, test_labels)
+        
         if epoch % 10 == 0:
             print('Epoch %d | test err: %.5f' % (epoch, err))
-        if epoch % 5 == 0:
-            ho_err = model.test_err(holdout_imgs, holdout_labels)
-            if ho_err > prev_ho_err:
-                break
-            prev_ho_err = ho_err
+        
+        ho_err = model.test_err(holdout_imgs, holdout_labels)
+        if ho_err >= prev_ho_err:
+            counter += 1
+        else:
+            counter = 0
+        if counter > 2:
+            print('Epoch %d | test err: %.5f' % (epoch, err))
+            break
         epoch += 1
+        prev_ho_err = ho_err
     return epoch, err
 
 def experiment_worker(learning_rates, batch_sizes, layers):
@@ -161,5 +168,5 @@ def experiment():
     plt.savefig('./layers.png')
 
 if __name__ == '__main__':
-    experiment()
+    # experiment()
     run()

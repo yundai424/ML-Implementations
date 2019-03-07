@@ -41,7 +41,7 @@ class MLP(object):
         # x: (batch size, 785)
         deltas, activations = self.back_propagate(x, y)
         for i in range(len(self.weights)):
-            self.weights[i] = self.weights[i] - learning_rate * activations[i].T @ deltas[i]
+            self.weights[i] -= learning_rate * activations[i].T @ deltas[i]
 
     def predict_label(self, x):
         _, y_pred = self.forward(x)
@@ -57,17 +57,15 @@ class MLP(object):
         '''
         activations = [x]
         for i in range(len(self.weights)):
-            z = x @ self.weights[i]
-            x = self.activation(z)
+            x = self.activation(x @ self.weights[i])
             activations.append(x)
         return activations, softmax_prob(x)
 
     def back_propagate(self, x, y):
         activations, y_pred = self.forward(x)
         deltas = [np.zeros((x.shape[0], weight.shape[-1])) for weight in self.weights]
-        delta_prev = self.delta_activation(activations[-1]) * (y_pred - y)
-        deltas[-1] = deltas[-1] + delta_prev
+        deltas[-1] += self.delta_activation(activations[-1]) * (y_pred - y)
         for i in range(len(self.weights) - 2, -1, -1):
-            deltas[i] = deltas[i] + (self.delta_activation(activations[i + 1]) *
+            deltas[i] += (self.delta_activation(activations[i + 1]) *
                                      (self.weights[i + 1] @ deltas[i + 1].T).T)
         return deltas, activations
